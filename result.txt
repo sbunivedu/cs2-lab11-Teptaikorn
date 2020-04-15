@@ -1,0 +1,25 @@
+ java LinkedBinarySearchTreeTester
+The height is: -1
+The height is: 0
+The height is: 1
+The height is: 1
+The height is: 2
+The height is: 2
+The height is: 2
+The height is: 2
+The height is: 3
+The height is: 3
+The height is: 3
+                 /----- J
+         /----- I
+ /----- H
+ |       |       /----- G
+ |       \----- F
+ |               \----- E
+D
+ |       /----- C
+ \----- B
+         \----- A
+
+3
+ 

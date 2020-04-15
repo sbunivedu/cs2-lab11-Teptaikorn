@@ -4,6 +4,7 @@
  */
 public class BinaryTreeNode<T>{
   protected T element;
+  protected int height = 0;
   protected BinaryTreeNode<T> left, right;
 
   /**

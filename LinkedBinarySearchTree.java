@@ -37,11 +37,12 @@ public class LinkedBinarySearchTree<T> extends LinkedBinaryTree<T>
       throw new NonComparableElementException("LinkedBinarySearchTree");
     }
 
-    if (isEmpty()){
+    /*if (isEmpty()){
       root = new BinaryTreeNode<T>(element);
     }else{
       addElement(element, root);
-    }
+    }*/
+    root = addElementAVL(element, root);
   }
 
   /**
@@ -242,5 +243,92 @@ public class LinkedBinarySearchTree<T> extends LinkedBinaryTree<T>
   public T findMax() throws EmptyCollectionException{
     // To be completed as a Programming Project
     return null;
+  }
+  private BinaryTreeNode<T> singleRightRotation(BinaryTreeNode<T> oldRoot){
+    //TASK: Rotate the left child up and to the right to
+    //      become the new root of this subtree
+    BinaryTreeNode<T> newRoot = oldRoot.left;
+    oldRoot.left = newRoot.right;
+    newRoot.right = oldRoot;
+    oldRoot.height = Math.max(height(oldRoot.left), height(oldRoot.right)) + 1;
+    newRoot.height = Math.max(height(newRoot.left), height(newRoot.right)) + 1;
+    return newRoot;
+  }
+ 
+  private BinaryTreeNode<T> singleLeftRotation(BinaryTreeNode<T> oldRoot){
+    //TASK: Rotate the right child up and to the left to
+    //      become the new root of this subtree
+    BinaryTreeNode<T> newRoot = oldRoot.right;
+    oldRoot.right = newRoot.left;
+    newRoot.left = oldRoot;
+    oldRoot.height = Math.max(height(oldRoot.left), height(oldRoot.right)) + 1;
+    newRoot.height = Math.max(height(newRoot.left), height(newRoot.right)) + 1;
+    return newRoot;
+  }
+ 
+  private BinaryTreeNode<T> doubleLeftRightRotation(BinaryTreeNode<T> oldRoot){
+    //TASK: Rotate the left subtree to the left, then up
+    //      and to the right to become the new root of this subtree
+    oldRoot.left = singleLeftRotation(oldRoot.left);
+    BinaryTreeNode<T> newRoot = singleRightRotation(oldRoot);
+    return newRoot;
+  }
+ 
+  private BinaryTreeNode<T> doubleRightLeftRotation(BinaryTreeNode<T> oldRoot){
+    //TASK: Rotate the right subtree to the right, then up and to
+    //      the left to become the new root of this subtree
+    oldRoot.right = singleRightRotation(oldRoot.right);
+    BinaryTreeNode<T> newRoot = singleLeftRotation(oldRoot);
+    return newRoot;
+  }
+
+    // helper method
+  private int balanceFactor(BinaryTreeNode<T> node){
+    return height(node.right) - height(node.left);
+  }
+ 
+  private BinaryTreeNode<T> addElementAVL(T element, BinaryTreeNode<T> node){
+    Comparable<T> comparableElement = (Comparable<T>)element;
+ 
+    if(node == null){
+      // empty spot? add/insert a new node here.
+      node = new BinaryTreeNode<T>(element);
+    }else if(comparableElement.compareTo(node.getElement()) < 0){
+      // insert in left subtree.
+      node.left = addElementAVL(element, node.left);
+      // AFTER inserting, it is possible the tree is out of balance, so check
+      // balance factors
+      if(balanceFactor(node) == -2){
+        // if true, left subtree too tall
+        // decide what sort of rotation will fix the problem
+        if(balanceFactor(node.left) < 0 ){
+          // left subtree of left child is too tall
+          // fix with a single right rotation
+          node = singleRightRotation(node);
+        }else{
+          // right subtree of left child is too tall
+          // so double rotation is necessary
+          node = doubleLeftRightRotation(node);
+        }
+      }
+    }else{
+      // insert in right subtree
+      // shown below is simply the mirror image of what we did above
+      node.right = addElementAVL(element, node.right);
+      if(balanceFactor(node) == 2 ){
+        // if true, right subtree too tall
+        // decide what sort of rotation will fix the problem
+        if(balanceFactor(node.right) > 0 ){
+          node = singleLeftRotation(node);
+        }else{
+          node = doubleRightLeftRotation(node);
+        }
+      }
+    }
+ 
+    // We are done, but now we need to reset the height of this node after the
+    // insertion
+    node.height = Math.max(height(node.left), height(node.right)) + 1;
+    return node;
   }
 }
